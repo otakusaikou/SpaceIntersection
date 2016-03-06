@@ -19,8 +19,8 @@ First, create an input file. The format of an input file must like:
 ```
 `<f>` is focal length of camera.  
 `<x*> <y*>` stands for the image coordinates of target point in left or right photo.  
-`<XR> <YR> <ZR> <OmegaR> <PhiR> <KappaR>` are the exterior orientation parameters of left photo or right photo.  
-Since the exterior orientation parameters are treated as observables with uncertainty, so they must have errors `<XR-Err> <YR-Err> <ZR-Err> <OmegaR-Err> <PhiR-Err> <KappaR-Err>.`
+`<X*> <Y*> <Z*> <Omega*> <Phi*> <Kappa*>` are the exterior orientation parameters of left photo or right photo.  
+Since the exterior orientation parameters are treated as observables with uncertainty, so they must have errors `<X*-Err> <Y*-Err> <Z*-Err> <Omega*-Err> <Phi*-Err> <Kappa*-Err>.`
 
 Then you can just call `./spaceIntersection.py -i <input file>` to start the computation.  
 You can also type `./spaceIntersection.py -h` for more information about this repository.  
