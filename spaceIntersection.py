@@ -98,6 +98,8 @@ def spaceIntersection(inputFile="input.txt", s=rad(5)):
     # Convert the angles from degree to radian
     EO1[3:] = map(lambda x: rad(x), EO1[3:])
     EO2[3:] = map(lambda x: rad(x), EO2[3:])
+    SigEO1[3:] = map(lambda x: rad(x), SigEO1[3:])
+    SigEO2[3:] = map(lambda x: rad(x), SigEO2[3:])
 
     xa1, ya1, xa2, ya2, = map(lambda x: float(x), lines[3].split()[1:])
 
