@@ -152,7 +152,7 @@ def spaceIntersection(inputFile="input.txt", s=rad(5)):
         f[2:] = -FuncF(*val2)
 
         # Solve the unknown parameters
-        Qe = (A * W * A.T).I
+        Qe = (A * W.I * A.T)
         We = Qe.I
         N = (B.T * We * B)                  # Compute normal matrix
         t = (B.T * We * f)                  # Compute t matrix
