@@ -161,7 +161,7 @@ def spaceIntersection(inputFile="input.txt", s=rad(5)):
 
         X0 += dX            # Update initial values
 
-        # Compute error of unit weight
+        # Compute sigma0 
         res = (V.T * W * V)[0, 0]
         s0 = (res / (B.shape[0] - B.shape[1]))**0.5
 
@@ -176,7 +176,7 @@ def spaceIntersection(inputFile="input.txt", s=rad(5)):
     print " %-10s %11.6f %11.6f" % ("XL", XA, paramStd[0])
     print " %-10s %11.6f %11.6f" % ("YL", YA, paramStd[1])
     print " %-10s %11.6f %11.6f" % ("ZL", ZA, paramStd[2])
-    print "\nError of unit weight : %.6f" % s0
+    print "\nSigma0 : %.6f" % s0
 
 
 def main():
