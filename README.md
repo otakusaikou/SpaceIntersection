@@ -1,7 +1,7 @@
 SpaceIntersection
 ==========
 
-##Description
+## Description
 This repository is an implementation of space intersection, which can get the position of an object point with given information.
 The necessary information include:  
 + focal length [mm]  
@@ -9,7 +9,7 @@ The necessary information include:
 + exterior orientation parameters of two photos with overlap area [m] [deg]  
 
 
-##Usage
+## Usage
 First, create an input file. The format of an input file must like:
 ```
 <f>
@@ -27,9 +27,9 @@ You can also type `./spaceIntersection.py -h` for more information about this re
 There are already two input files serve as an example.
 
 
-##Requirements
+## Requirements
 
-###Python
+### Python
 [Python v2.7.X](https://www.python.org) with the following modules to be installed.
 
 -[Numpy](http://www.numpy.org)  
