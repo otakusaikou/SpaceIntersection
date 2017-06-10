@@ -2,17 +2,20 @@
 # -*- coding: utf-8 -*-
 from sympy import sin, cos, Matrix, symbols, lambdify
 from optparse import OptionParser
-from math import radians as rad
 import numpy as np
+import pandas as pd
 
 
 np.set_printoptions(suppress=True)  # Disable scientific notation for numpy
 
 
-def getInit(xa1, ya1, xa2, ya2, EO1, EO2, f):
+def getInit(xa, ya, EO, f):
     """Compute initial values of unknown parameters"""
-    X1, Y1, Z1 = EO1
-    X2, Y2, Z2 = EO2
+    xa1, xa2 = xa.ravel()
+    ya1, ya2 = ya.ravel()
+
+    X1, Y1, Z1 = EO[0, :]
+    X2, Y2, Z2 = EO[1, :]
 
     B = np.sqrt((X2 - X1)**2 + (Y2 - Y1)**2)    # The baseline
     pa = ya1 - ya2                              # The parallax
@@ -76,94 +79,114 @@ def getEqn(IO, EO, PT, pt):
     return F
 
 
-def spaceIntersection(inputFile="input.txt", s=rad(5)):
+def spaceIntersection(inputFile, s):
     """Perform a space intersection"""
-    # Define symbols
-    EO = symbols("XL YL ZL Omega Phi Kappa")  # Exterior orienration parameters
-    PT = symbols("XA YA ZA")    # Object point coordinates
-    pt = symbols("xa ya")       # Image coordinates
+    # For I.O.
+    with open(inputFile) as fin:
+        f = float(fin.readline())   # The focal length in mm
 
-    # Read observables from txt file
-    fin = open(inputFile)
-    lines = fin.readlines()
-    fin.close()
+    # For E.O.
+    # xp yp XL YL ZL O P K SigXL SigYL SigZL SigO SigP SigK
+    data = pd.read_csv(
+        inputFile,
+        delimiter=' ',
+        usecols=range(1, 15),
+        names=[str(i) for i in range(14)],
+        skiprows=1)
 
-    f = float(lines[0])     # The focal length in mm
-    EO1, EO2 = np.vsplit(np.array(map(
-        lambda x: x.split()[1:], lines[1:3])).astype(np.double), 2)
+    EO, SigEO = np.hsplit(data.values[:, 2:], 2)
 
-    EO1, SigEO1 = map(lambda x: x.flatten(), np.hsplit(EO1, 2))
-    EO2, SigEO2 = map(lambda x: x.flatten(), np.hsplit(EO2, 2))
+    # Convert from degrees to radians
+    EO[:, 3:] = np.radians(EO[:, 3:])
+    SigEO[:, 3:] = np.radians(SigEO[:, 3:])
 
-    # Convert the angles from degree to radian
-    EO1[3:] = map(lambda x: rad(x), EO1[3:])
-    EO2[3:] = map(lambda x: rad(x), EO2[3:])
-    SigEO1[3:] = map(lambda x: rad(x), SigEO1[3:])
-    SigEO2[3:] = map(lambda x: rad(x), SigEO2[3:])
-
-    xa1, ya1, xa2, ya2, = map(lambda x: float(x), lines[3].split()[1:])
+    # For image points
+    xa, ya = np.hsplit(data.values[:, :2], 2)
 
     # Compute initial values
-    X0 = np.matrix(getInit(xa1, ya1, xa2, ya2, EO1[:3], EO2[:3], f)).T
+    X0 = np.matrix(getInit(xa[:2], ya[:2], EO[:2, :3], f)).T
 
-    print "Initial Values:\n Param\tValue"
-    print "   XA\t%.6f" % X0[0, 0]
-    print "   YA\t%.6f" % X0[1, 0]
-    print "   ZA\t%.6f" % X0[2, 0]
-    print
+    # print "Initial Values:\n Param\tValue"
+    # print "   XA\t%.6f" % X0[0, 0]
+    # print "   YA\t%.6f" % X0[1, 0]
+    # print "   ZA\t%.6f" % X0[2, 0]
+    # print
 
     # Define variable for inerior orienration parameters
     IO = f, 0, 0
 
-    # List and linearize observation equations
-    F = getEqn(IO, EO, PT, pt)
-    JFx = F.jacobian(PT)
-    JFl = F.jacobian(EO)    # Jacobian matrix for observables
-
-    # Create lambda function objects
-    FuncJFx = lambdify((EO+PT), JFx)
-    FuncJFl = lambdify((EO+PT), JFl)
-    FuncF = lambdify((EO+PT+pt), F)
+    # Define symbols
+    EOs = symbols("XL YL ZL Omega Phi Kappa")   # E.O. parameters
+    PTs = symbols("XA YA ZA")       # Object point coordinates
+    pts = symbols("xa ya")          # Image coordinates
 
     # Define weight matrix
-    err = np.append(SigEO1, SigEO2)     # Error vector
+    err = SigEO.ravel()     # Error vector
     W = np.matrix(np.diag(s**2 / err**2))
+    Q = W.I
+
+    # List and linearize observation equations
+    F = getEqn(IO, EOs, PTs, pts)
+    JFx = F.jacobian(PTs)
+    JFl = F.jacobian(EOs)       # Jacobian matrix for observables
+
+    # Create lambda function objects
+    FuncJFx = lambdify((EOs+PTs), JFx, 'numpy')
+    FuncJFl = lambdify((EOs+PTs), JFl, 'numpy')
+    FuncF = lambdify((EOs+PTs+pts), F, 'numpy')
+
+    numPt = len(data)
+
+    # Create observable array as argument of function objects
+    l = np.zeros((numPt, 11))
+    l[:, :6] = EO
+    l[:, 6:9] = X0[:, :].T
+    l[:, 9] += xa.ravel()
+    l[:, 10] += ya.ravel()
 
     dX = np.ones(1)                              # Initial value for iteration
 
     # Iteration process
-    while abs(dX.sum()) > 10**-12:
+    lc = 0          # Loop count
+    dRes = 1.       # Termination criteria
+    res = 1.        # Initial value of residual
+    while dRes > 10**-12 and lc < 20:
         # Compute coefficient matrix and constants matrix
-        A = np.matrix(np.zeros((4, 12))).astype(np.double)
-        B = np.matrix(np.zeros((4, 3))).astype(np.double)
-        f = np.matrix(np.zeros((4, 1))).astype(np.double)
+        A = np.zeros((2 * numPt, len(err)))
+        B = np.zeros((2 * numPt, 3))
 
-        # Deifne array of constants
-        val1 = np.concatenate(
-            (EO1, np.array(X0).flatten(), np.array([xa1, ya1])))
-        val2 = np.concatenate(
-            (EO2, np.array(X0).flatten(), np.array([xa2, ya2])))
+        Ai = FuncJFl(*np.hsplit(l, 11)[:-2])
+        Bi = FuncJFx(*np.hsplit(l, 11)[:-2])
+        F0 = np.matrix(-FuncF(*np.hsplit(l, 11)).T.reshape(-1, 1))
 
-        A[:2, :6] = FuncJFl(*val1[:-2])
-        A[2:, 6:] = FuncJFl(*val2[:-2])
-        B[:2] = FuncJFx(*val1[:-2])
-        B[2:] = FuncJFx(*val2[:-2])
-        f[:2] = -FuncF(*val1)
-        f[2:] = -FuncF(*val2)
+        for i in range(numPt):
+            A[2*i:2*(i+1), 6*i:6*(i+1)] = Ai[:, :, i].reshape(2, 6)
+            B[2*i:2*(i+1), :] = Bi[:, :, i].reshape(2, 3)
+
+        A = np.matrix(A)
+        B = np.matrix(B)
 
         # Solve the unknown parameters
-        Qe = (A * W.I * A.T)
+        AT = A.T.copy()
+        Qe = (A * Q * AT)
         We = Qe.I
         N = (B.T * We * B)                  # Compute normal matrix
-        t = (B.T * We * f)                  # Compute t matrix
+        t = (B.T * We * F0)                 # Compute t matrix
         dX = N.I * t                        # Compute unknown parameters
-        V = W.I * A.T * We * (f - B * dX)   # Compute residual vector
+        V = Q * AT * We * (F0 - B * dX)     # Compute residual vector
 
         X0 += dX            # Update initial values
+        l[:, 6:9] += dX[:, :].T
 
-        # Compute sigma0 
+        # Update termination criteria
+        if lc > 1:
+            dRes = abs(((V.T * W * V)[0, 0]/res) - 1)
         res = (V.T * W * V)[0, 0]
+
+        # Compute sigma0
         s0 = (res / (B.shape[0] - B.shape[1]))**0.5
+
+        lc += 1
 
     # Compute other informations
     SigmaXX = s0**2 * N.I
@@ -199,10 +222,10 @@ def main():
 
     # Define default values if there are nothing given by the user
     if not options.input:
-        options.input = "input.txt"
+        options.input = "./input.txt"
 
     if not options.s:
-        options.s = 0.001
+        options.s = 0.005
 
     spaceIntersection(inputFile=options.input, s=options.s)
 
