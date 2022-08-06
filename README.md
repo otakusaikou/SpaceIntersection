@@ -30,7 +30,7 @@ There are already two input files serve as an example.
 ## Requirements
 
 ### Python
-[Python v2.7.X](https://www.python.org) with the following modules to be installed.
+[Python v2.7 and 3 ](https://www.python.org) with the following modules to be installed.
 
 -[Numpy](http://www.numpy.org)  
 -[Sympy](http://www.sympy.org/en/index.html)  
