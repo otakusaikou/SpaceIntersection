@@ -21,7 +21,9 @@ First, create an input file. The format of an input file must like:
 `<x*> <y*>` stands for the image coordinates of target point.  
 `<XL*> <YL*> <ZL*> <Omega*> <Phi*> <Kappa*>` are the exterior orientation parameters.  
 Since the exterior orientation parameters are treated as observables with uncertainty, so they must have errors `<XL*-Err> <YL*-Err> <ZL*-Err> <Omega*-Err> <Phi*-Err> <Kappa*-Err>.`
+
 How to run the code by terminal:
+
 Then you can just call `./spaceIntersection.py -i <input file>` to start the computation.  
 You can also type `./spaceIntersection.py -h` for more information about this repository.  
 There are already two input files serve as an example.
