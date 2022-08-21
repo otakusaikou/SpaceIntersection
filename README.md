@@ -25,7 +25,7 @@ Since the exterior orientation parameters are treated as observables with uncert
 ## Requirements
 
 ### Python
-[Python v2.7 and 3 ](https://www.python.org) with the following modules to be installed.
+[Python 3 ](https://www.python.org) with the following modules to be installed.
 
 -[Numpy](http://www.numpy.org)  
 -[Sympy](http://www.sympy.org/en/index.html)  
