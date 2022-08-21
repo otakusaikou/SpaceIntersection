@@ -197,6 +197,12 @@ def spaceIntersection(inputFile, s):
     print(XA)
     print(YA)
     print(ZA)
+    
+     return XA, YA, ZA
+
+s = 0.005
+input = "./input4.txt"
+spaceIntersection(input, s)
 
     # Output results
     # print "Object point coordinates:"
