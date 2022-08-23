@@ -4,9 +4,9 @@ Space Intersection
 ## _Description_ 
 This repository is an implementation of photogrammetry space intersection, which can get the position of an object point with given information.
 The necessary information include:  
-+ focal length [mm]  
-+ image coordinates [mm]  
-+ exterior orientation parameters of more than two photos with overlap area [m] [deg]  
++ focal length <f> [mm]  
++ image coordinates <x1> <y1> [mm]  
++ exterior orientation parameters <XL1> <YL1> <ZL1> <Omega1> <Phi1> <Kappa1>  of two and more than two photos with overlap area [m] [deg]  
 
 
 ## _Usage_
