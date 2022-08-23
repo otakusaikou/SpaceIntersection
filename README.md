@@ -18,6 +18,7 @@ First, create an input file. The format of an input file must like:
 <Photo-Name> <x3> <y3> <XL3> <YL3> <ZL3> <Omega3> <Phi3> <Kappa3> <XL3-Err> <YL3-Err> <ZL3-Err> <OmegaL3-Err> <PhiL3-Err> <KappaL3-Err>
 ```
 _Note_: if the exterior orientation parameters do not include any errors, you can use values near the zero for example, 0.0001
+
 `<f>` is focal length of camera.  
 `<x*> <y*>` stands for the image coordinates of target point.  
 `<XL*> <YL*> <ZL*> <Omega*> <Phi*> <Kappa*>` are the exterior orientation parameters.  
