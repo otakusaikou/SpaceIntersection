@@ -1,4 +1,4 @@
-SpaceIntersection
+Space Intersection
 ==========
 
 ## Description
