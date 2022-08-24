@@ -6,7 +6,7 @@ This repository is an implementation of photogrammetry space intersection, which
 The necessary information include:  
 + focal length f [mm]  
 + image coordinates x y [mm]  
-+ exterior orientation parameters XL YL ZL Omega Phi Kappa of two or more overlapped photos with overlap area [m] [deg]  
++ exterior orientation parameters (XL, YL, ZL, Omega, Phi, Kappa) of two or more overlapped photos with overlap area [m] [deg]  
 
 
 ## _Usage_
