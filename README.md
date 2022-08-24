@@ -2,7 +2,7 @@ Photogrammetry Space Intersection
 ==========
 
 ## _Description_ 
-This repository is an implementation of photogrammetry space intersection, which can get the position of an object point with given information.
+This repository is an implementation of photogrammetry space intersection, getting the position of an object point with given information.
 The necessary information include:  
 + focal length f [mm]  
 + image coordinates x y [mm]  
