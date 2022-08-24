@@ -201,7 +201,7 @@ def spaceIntersection(inputFile, s):
      return XA, YA, ZA
 
 s = 0.005
-input = "./input4.txt"
+input = "./input3.txt"
 spaceIntersection(input, s)
 
     # Output results
