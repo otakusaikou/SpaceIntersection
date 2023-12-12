@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from sympy import sin, cos, Matrix, symbols, lambdify
-from optparse import OptionParser
+#from optparse import OptionParser
 import numpy as np
 import pandas as pd
 
@@ -192,17 +192,28 @@ def spaceIntersection(inputFile, s):
     SigmaXX = s0**2 * N.I
     paramStd = np.sqrt(np.diag(SigmaXX))
     XA, YA, ZA = np.array(X0).flatten()
+    # Print outputs/Ground Coordinate 
+    print ("Object point coordinates:")
+    print(XA)
+    print(YA)
+    print(ZA)
+    
+     return XA, YA, ZA
+
+s = 0.005
+input = "./input3.txt"
+spaceIntersection(input, s)
 
     # Output results
-    print "Object point coordinates:"
-    print (" %9s %11s %11s") % ("Parameter", "Value", "Std.")
-    print " %-10s %11.6f %11.6f" % ("XL", XA, paramStd[0])
-    print " %-10s %11.6f %11.6f" % ("YL", YA, paramStd[1])
-    print " %-10s %11.6f %11.6f" % ("ZL", ZA, paramStd[2])
-    print "\nSigma0 : %.6f" % s0
+    # print "Object point coordinates:"
+    # print (" %9s %11s %11s") % ("Parameter", "Value", "Std.")
+    # print " %-10s %11.6f %11.6f" % ("XL", XA, paramStd[0])
+    # print " %-10s %11.6f %11.6f" % ("YL", YA, paramStd[1])
+    # print " %-10s %11.6f %11.6f" % ("ZL", ZA, paramStd[2])
+    # print "\nSigma0 : %.6f" % s0
 
 
-def main():
+""" def main():
     parser = OptionParser(usage="%prog [-i] [-s]", version="%prog 0.1")
 
     # Define options
@@ -234,3 +245,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+"""
